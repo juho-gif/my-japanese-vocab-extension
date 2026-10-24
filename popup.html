@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>単語帳 Preview</title>
+  <style>
+    body { width: 320px; font-family: -apple-system, BlinkMacSystemFont, sans-serif; margin: 0; padding: 15px; background: #ffffff; color: #1e293b; }
+    h2 { font-size: 16px; margin: 0 0 12px 0; display: flex; justify-content: space-between; align-items: center; }
+    .count-badge { font-size: 11px; background: #e2e8f0; color: #475569; padding: 2px 8px; border-radius: 10px; }
+    .list { max-height: 380px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
+    .card { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 10px; position: relative; }
+    .badge { position: absolute; top: 10px; right: 10px; padding: 2px 6px; font-size: 10px; font-weight: bold; border-radius: 4px; color: white; background: #64748b; }
+    .badge.N5 { background: #10b981; }
+    .badge.N4 { background: #06b6d4; }
+    .badge.N3 { background: #3b82f6; }
+    .badge.N2 { background: #f97316; }
+    .badge.N1 { background: #ef4444; }
+    .word { font-size: 18px; font-weight: bold; color: #0f172a; }
+    .reading { font-size: 12px; color: #64748b; margin-bottom: 6px; }
+    .def { font-size: 12px; color: #334155; line-height: 1.4; }
+    .meta { font-size: 10px; color: #94a3b8; margin-top: 6px; }
+    .empty { text-align: center; color: #94a3b8; padding: 20px 0; font-size: 13px; }
+  </style>
+</head>
+<body>
+  <h2>📖 Recent Words <span class="count-badge" id="total-count">0</span></h2>
+  <div class="list" id="word-list">
+    <div class="empty">読み込み中...</div>
+  </div>
+  <script src="popup.js"></script>
+</body>
+</html>

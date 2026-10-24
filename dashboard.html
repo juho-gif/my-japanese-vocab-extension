@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>📖 マイ単語帳</title>
+  <style>
+    :root { --bg-color: #f8fafc; --card-bg: #ffffff; --text-main: #0f172a; --text-sub: #64748b; --border-color: #e2e8f0; --card-shadow: rgba(0, 0, 0, 0.05); --modal-bg: rgba(15, 23, 42, 0.6); }
+    body.dark-mode { --bg-color: #0f172a; --card-bg: #1e293b; --text-main: #f8fafc; --text-sub: #94a3b8; --border-color: #334155; --card-shadow: rgba(0, 0, 0, 0.3); --modal-bg: rgba(0, 0, 0, 0.8); }
+    * { box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; transition: background-color 0.2s, color 0.2s; }
+    body { background: var(--bg-color); color: var(--text-main); margin: 0; padding: 30px 20px; }
+    .container { max-width: 1000px; margin: 0 auto; }
+    
+    header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; border-bottom: 2px solid var(--border-color); padding-bottom: 15px; }
+    h1 { margin: 0; font-size: 26px; }
+    
+    .controls { display: flex; gap: 10px; flex-wrap: wrap; justify-content: flex-end; }
+    .btn { background: var(--card-bg); border: 1px solid var(--border-color); color: var(--text-main); padding: 8px 14px; border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: bold; }
+    .btn:hover { border-color: #3b82f6; }
+    
+    .btn-archive { background: #d97706 !important; color: white !important; border: none !important; }
+    .btn-archive:hover { background: #b45309 !important; }
+    .btn-magic { background: #8b5cf6; color: white; border: none; }
+
+    #add-word-btn { background: #7c3aed !important; color: white !important; border: none !important; }
+    #add-word-btn:hover { background: #6d28d9 !important; }
+
+    .level-blocks { display: grid; grid-template-columns: repeat(7, 1fr); gap: 10px; margin-bottom: 30px; }
+    .level-btn { background: var(--card-bg); border: 1px solid var(--border-color); padding: 10px 2px; text-align: center; border-radius: 10px; cursor: pointer; font-size: 13px; font-weight: bold; }
+    .level-btn .count { font-size: 11px; opacity: 0.8; margin-top: 4px; font-weight: normal; }
+
+    .level-btn.active[data-level="ALL"] { background: #38bdf8; color: white; border-color: #38bdf8; }
+    .level-btn.active[data-level="N5"]  { background: #10b981; color: white; border-color: #10b981; }
+    .level-btn.active[data-level="N4"]  { background: #06b6d4; color: white; border-color: #06b6d4; }
+    .level-btn.active[data-level="N3"]  { background: #3b82f6; color: white; border-color: #3b82f6; }
+    .level-btn.active[data-level="N2"]  { background: #f97316; color: white; border-color: #f97316; }
+    .level-btn.active[data-level="N1"]  { background: #ef4444; color: white; border-color: #ef4444; }
+    .level-btn.active[data-level="未分類"] { background: #64748b; color: white; border-color: #64748b; }
+
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 18px; }
+    .card { background: var(--card-bg); border-radius: 12px; padding: 18px; border: 1px solid var(--border-color); box-shadow: 0 4px 6px var(--card-shadow); position: relative; cursor: pointer; }
+    .card:hover { transform: translateY(-3px); border-color: #3b82f6; }
+    
+    .badge { position: absolute; top: 16px; right: 16px; padding: 2px 8px; font-size: 11px; font-weight: bold; border-radius: 12px; color: white; background: #64748b; }
+    .badge.N5 { background: #10b981; } .badge.N4 { background: #06b6d4; } .badge.N3 { background: #3b82f6; } .badge.N2 { background: #f97316; } .badge.N1 { background: #ef4444; }
+
+    .word { font-size: 22px; font-weight: bold; color: var(--text-main); }
+    .reading { font-size: 13px; color: var(--text-sub); margin-bottom: 10px; }
+    .def { font-size: 14px; color: var(--text-main); line-height: 1.4; margin-bottom: 0px; }
+
+    .empty { text-align: center; padding: 60px 0; color: var(--text-sub); grid-column: 1 / -1; }
+
+    .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--modal-bg); justify-content: center; align-items: center; z-index: 100; }
+    .modal.show { display: flex; }
+    .modal-content { background: var(--card-bg); width: 90%; max-width: 500px; padding: 25px; border-radius: 16px; border: 1px solid var(--border-color); box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2); max-height: 90vh; overflow-y: auto; }
+    .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+    .modal-title { font-size: 20px; font-weight: bold; }
+    .close-btn { cursor: pointer; font-size: 20px; color: var(--text-sub); }
+    
+    .form-group { margin-bottom: 15px; }
+    .form-group label { display: block; font-size: 12px; color: var(--text-sub); margin-bottom: 5px; font-weight: bold; }
+    .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 10px; background: var(--bg-color); border: 1px solid var(--border-color); border-radius: 8px; color: var(--text-main); font-size: 14px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div>
+        <h1>📖 マイ単語帳</h1>
+        <div style="font-size: 13px; color: var(--text-sub);" id="total-count">読み込み中...</div>
+      </div>
+      <div class="controls">
+        <button class="btn" id="add-word-btn">➕ 手動追加</button>
+        <button class="btn" id="lang-btn">🌐 釈義言語: 中文</button>
+        <button class="btn" id="theme-btn">🌙 Dark Mode</button>
+        <button class="btn btn-archive" id="toggle-view-btn">✅ 覚えたリスト</button>
+      </div>
+    </header>
+
+    <div class="level-blocks">
+      <div class="level-btn active" data-level="ALL">すべて<div class="count" id="cnt-ALL">0</div></div>
+      <div class="level-btn" data-level="N5">N5<div class="count" id="cnt-N5">0</div></div>
+      <div class="level-btn" data-level="N4">N4<div class="count" id="cnt-N4">0</div></div>
+      <div class="level-btn" data-level="N3">N3<div class="count" id="cnt-N3">0</div></div>
+      <div class="level-btn" data-level="N2">N2<div class="count" id="cnt-N2">0</div></div>
+      <div class="level-btn" data-level="N1">N1<div class="count" id="cnt-N1">0</div></div>
+      <div class="level-btn" data-level="未分類">未分類<div class="count" id="cnt-未分類">0</div></div>
+    </div>
+
+    <div class="grid" id="vocab-grid"><div class="empty">読み込み中...</div></div>
+  </div>
+
+  <!-- 详情编辑弹窗 -->
+  <div class="modal" id="detail-modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <div class="modal-title">🔍 詳情 & 編集</div>
+        <span class="close-btn" id="close-detail">&times;</span>
+      </div>
+      <div class="form-group"><label>単語 (Word)</label><input type="text" id="edit-word"></div>
+      <div class="form-group"><label>フリガナ (Reading)</label><input type="text" id="edit-reading"></div>
+      <div class="form-group">
+        <label>レベル</label>
+        <select id="edit-level">
+          <option value="N5">N5</option><option value="N4">N4</option><option value="N3">N3</option><option value="N2">N2</option><option value="N1">N1</option><option value="未分類">未分類</option>
+        </select>
+      </div>
+      <div class="form-group"><label>中文釈義</label><textarea id="edit-cn" rows="2"></textarea></div>
+      <div class="form-group"><label>English Definition</label><textarea id="edit-en" rows="2"></textarea></div>
+      <!-- ✨ 例文只在弹窗里显示 -->
+      <div class="form-group"><label>例文 (Example Sentence)</label><textarea id="edit-sentence" rows="2" placeholder="例: 何もないけれど全て差し出すよ"></textarea></div>
+      
+      <div style="display: flex; justify-content: space-between; margin-top: 20px;">
+        <button class="btn" id="toggle-master-btn" style="background: #10b981; color: white;">✅ 覚えた</button>
+        <div>
+          <button class="btn" id="delete-word-btn" style="color: #ef4444;">🗑️ 削除</button>
+          <button class="btn" id="save-edit-btn" style="background: #7c3aed; color: white;">💾 保存</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 手动添加弹窗 -->
+  <div class="modal" id="add-modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <div class="modal-title">➕ 単語を追加</div>
+        <span class="close-btn" id="close-add">&times;</span>
+      </div>
+      
+      <div class="form-group" style="display: flex; gap: 10px; align-items: flex-end;">
+        <div style="flex: 1;">
+          <label>単語 (Word)*</label>
+          <input type="text" id="new-word" placeholder="入力後、右のボタンをクリック👉">
+        </div>
+        <button class="btn btn-magic" id="auto-fetch-btn">🪄 自動取得</button>
+      </div>
+
+      <div class="form-group"><label>フリガナ</label><input type="text" id="new-reading"></div>
+      <div class="form-group">
+        <label>レベル</label>
+        <select id="new-level">
+          <option value="N5">N5</option><option value="N4">N4</option><option value="N3">N3</option><option value="N2">N2</option><option value="N1">N1</option><option value="未分類" selected>未分類</option>
+        </select>
+      </div>
+      <div class="form-group"><label>中文釈義</label><input type="text" id="new-cn"></div>
+      <div class="form-group"><label>English Definition</label><input type="text" id="new-en"></div>
+      <!-- ✨ 例文只在弹窗里显示 -->
+      <div class="form-group"><label>例文 (Example Sentence)</label><textarea id="new-sentence" rows="2" placeholder="文脈で単語を覚えましょう！"></textarea></div>
+      
+      <div style="text-align: right; margin-top: 20px;"><button class="btn" id="submit-new-btn" style="background: #7c3aed; color: white;">追加</button></div>
+    </div>
+  </div>
+
+  <script src="dashboard.js"></script>
+</body>
+</html>

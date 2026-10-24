@@ -1,0 +1,45 @@
+{
+  "manifest_version": 3,
+  "name": "マイ単語帳 - 日本語学習",
+  "short_name": "マイ単語帳",
+  "version": "1.0",
+  "description": "文脈で覚える！自分だけの専用日本語単語帳。Web上の単語を保存・管理し、効率よく復習できます。",
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "permissions": [
+    "storage",
+    "activeTab"
+  ],
+  "host_permissions": [
+    "https://jisho.org/*"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "action": {
+    "default_title": "点击查看生词本 Dashboard",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    }
+  },
+  "commands": {
+    "add-vocab": {
+      "suggested_key": {
+        "default": "Ctrl+J",
+        "mac": "Command+J"
+      },
+      "description": "保存选中的日语生词"
+    }
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content.js"]
+    }
+  ]
+}
